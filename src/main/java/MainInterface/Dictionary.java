@@ -33,8 +33,6 @@ public class Dictionary extends javax.swing.JFrame {
         initComponents();
     }
 
-
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -81,23 +79,54 @@ public class Dictionary extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        
+
         String word = inputSearch.getText();
-        
-        try{
+
+        try {
             String url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + word;
             String text = new BufferedReader(
-                                new InputStreamReader(new URL(url).openStream(), StandardCharsets.UTF_8))
-                                  .lines()
-                                  .collect(Collectors.joining("\n"));
+                    new InputStreamReader(new URL(url).openStream(), StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
             JsonElement jsonElement = JsonParser.parseString(text);
             JsonArray jsonArray = jsonElement.getAsJsonArray();
-            JsonObject obj = jsonArray.get(0).getAsJsonObject();
-            System.out.println(obj.get("word"));
-        }catch(Exception e){
+
+            //check whether has data
+            if (jsonArray.size() > 0) {
+                String result = "";
+                JsonObject obj = jsonArray.get(0).getAsJsonObject();
+                //have a big object
+                //need to get into meanings array and parse it
+
+                //tap into meanings array and get object from the array
+                //needs a loop to travese on all objects available in meaning
+                JsonArray meaningArray = obj.get("meanings").getAsJsonArray();
+                JsonObject meaningObject;
+                for (int i = 0; i < meaningArray.size(); i++) {
+                    //looping through the meaning array
+                    meaningObject = meaningArray.get(i).getAsJsonObject();
+                    JsonArray definitionArray = meaningObject.get("definitions").getAsJsonArray();
+                    JsonObject definitionObject;
+                    
+                    for (int k = 0; k < definitionArray.size(); k++) {
+                        
+                        definitionObject = definitionArray.get(k).getAsJsonObject();
+                        String means = definitionObject.get("definition").toString().replace("\"", "").replace("\\", "");
+                        result += means+"\n";
+                        System.out.println(result);
+                    
+                    }
+
+                }
+
+                //definitions are again in a json array 
+                //needs to repeat the same operation
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
 
     }//GEN-LAST:event_btnSearchActionPerformed
 
@@ -136,9 +165,7 @@ public class Dictionary extends javax.swing.JFrame {
         });
     }
 
-    
-    
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSearch;
     private javax.swing.JTextField inputSearch;
