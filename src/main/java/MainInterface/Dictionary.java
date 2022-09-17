@@ -10,15 +10,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.awt.font.TextMeasurer;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
-import javax.jms.TextMessage;
-import javax.swing.BorderFactory;
-import javax.swing.border.Border;
+
 
 /**
  *
@@ -49,12 +46,22 @@ public class Dictionary extends javax.swing.JFrame {
         resultText = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(600, 450));
+        setMinimumSize(new java.awt.Dimension(600, 450));
+        setPreferredSize(new java.awt.Dimension(600, 450));
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel1.setMinimumSize(new java.awt.Dimension(600, 450));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         inputSearch.setText("Search a word here");
-        jPanel1.add(inputSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 250, 40));
+        inputSearch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inputSearchMouseClicked(evt);
+            }
+        });
+        jPanel1.add(inputSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 440, 40));
 
         btnSearch.setText("Search");
         btnSearch.addActionListener(new java.awt.event.ActionListener() {
@@ -62,18 +69,18 @@ public class Dictionary extends javax.swing.JFrame {
                 btnSearchActionPerformed(evt);
             }
         });
-        jPanel1.add(btnSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 20, 120, 40));
+        jPanel1.add(btnSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 20, 120, 40));
 
         resultText.setEditable(false);
         resultText.setColumns(20);
         resultText.setLineWrap(true);
-        resultText.setRows(20);
+        resultText.setRows(15);
         resultText.setWrapStyleWord(true);
         jScrollPane1.setViewportView(resultText);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 380, 220));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 570, 330));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 400, 300));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 590, 420));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -109,18 +116,19 @@ public class Dictionary extends javax.swing.JFrame {
                     //setting the partof speech
                     String partOfString = meaningObject.get("partOfSpeech").toString().replace("\"", "").replace("\\", "");
                     result += " -- " + partOfString.toUpperCase() + "\n";
+
                     JsonArray definitionArray = meaningObject.get("definitions").getAsJsonArray();
                     JsonObject definitionObject;
 
                     for (int k = 0; k < definitionArray.size(); k++) {
 
                         definitionObject = definitionArray.get(k).getAsJsonObject();
+
                         try {
                             String means = definitionObject.get("definition").toString().replace("\"", "").replace("\\", "");
                             //each definition has an example that can be read
                             try {
                                 String example = definitionObject.get("example").toString().replace("\"", "").replace("\\", "");
-
                                 result += "   •" + means + "\n";
                                 result += "          Eg:-" + example + "\n";
 
@@ -131,7 +139,7 @@ public class Dictionary extends javax.swing.JFrame {
                                 
                             }
                         }catch(Exception e){
-                            
+                            resultText.setText("No definitions");
                         }
 
                     }
@@ -148,6 +156,11 @@ public class Dictionary extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void inputSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inputSearchMouseClicked
+        // TODO add your handling code here:
+         inputSearch.setText("");
+    }//GEN-LAST:event_inputSearchMouseClicked
 
     /**
      * @param args the command line arguments
