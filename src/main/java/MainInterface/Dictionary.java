@@ -46,7 +46,7 @@ public class Dictionary extends javax.swing.JFrame {
         inputSearch = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        result = new javax.swing.JTextArea();
+        resultText = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -64,12 +64,12 @@ public class Dictionary extends javax.swing.JFrame {
         });
         jPanel1.add(btnSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 20, 120, 40));
 
-        result.setEditable(false);
-        result.setColumns(20);
-        result.setLineWrap(true);
-        result.setRows(20);
-        result.setWrapStyleWord(true);
-        jScrollPane1.setViewportView(result);
+        resultText.setEditable(false);
+        resultText.setColumns(20);
+        resultText.setLineWrap(true);
+        resultText.setRows(20);
+        resultText.setWrapStyleWord(true);
+        jScrollPane1.setViewportView(resultText);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 380, 220));
 
@@ -105,16 +105,35 @@ public class Dictionary extends javax.swing.JFrame {
                 for (int i = 0; i < meaningArray.size(); i++) {
                     //looping through the meaning array
                     meaningObject = meaningArray.get(i).getAsJsonObject();
+
+                    //setting the partof speech
+                    String partOfString = meaningObject.get("partOfSpeech").toString().replace("\"", "").replace("\\", "");
+                    result += " -- " + partOfString.toUpperCase() + "\n";
                     JsonArray definitionArray = meaningObject.get("definitions").getAsJsonArray();
                     JsonObject definitionObject;
-                    
+
                     for (int k = 0; k < definitionArray.size(); k++) {
-                        
+
                         definitionObject = definitionArray.get(k).getAsJsonObject();
-                        String means = definitionObject.get("definition").toString().replace("\"", "").replace("\\", "");
-                        result += means+"\n";
-                        System.out.println(result);
-                    
+                        try {
+                            String means = definitionObject.get("definition").toString().replace("\"", "").replace("\\", "");
+                            //each definition has an example that can be read
+                            try {
+                                String example = definitionObject.get("example").toString().replace("\"", "").replace("\\", "");
+
+                                result += "   •" + means + "\n";
+                                result += "          Eg:-" + example + "\n";
+
+                                System.out.println(result);
+                                resultText.setText(result);
+                            }
+                            catch(Exception e){
+                                
+                            }
+                        }catch(Exception e){
+                            
+                        }
+
                     }
 
                 }
@@ -124,7 +143,7 @@ public class Dictionary extends javax.swing.JFrame {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            resultText.setText("No results found. Please check your spellings");
         }
 
 
@@ -171,6 +190,6 @@ public class Dictionary extends javax.swing.JFrame {
     private javax.swing.JTextField inputSearch;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea result;
+    private javax.swing.JTextArea resultText;
     // End of variables declaration//GEN-END:variables
 }
